@@ -3,7 +3,10 @@
 #include <MFRC522.h>
 #include <MFRC522Extended.h>
 #include <require_cpp11.h>
+#include "SerialMP3Player.h"
 
+#define TX 16
+#define RX 17
 #include <LiquidCrystal_I2C.h>
 
 MFRC522 rfid(SS_PIN, RST_PIN);
@@ -21,14 +24,18 @@ member card[maxMember];
 void setup() {
 
   card[0].id = "73 85 0F 19";
-  card[0].user = "WAHYU";
+  card[0].user = "MANGURI";
   card[0].saldo = 25000;
   
   card[1].id = "1C 1F 5D 49";
-  card[1].user = "FIRMANSYAH";
+  card[1].user = "NAJWA";
   card[1].saldo = 50000;
 
   Serial.begin(115200);
+
+  pinMode(relayUV,OUTPUT);
+  digitalWrite(relayUV,HIGH);
+  
   Serial.println(card[1].saldo);
   while (!Serial);
   SPI.begin();
@@ -44,14 +51,22 @@ void setup() {
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("VendingBOT Start");
-  delay(2000);
+  delay(1000);
   lcd.clear();
-
+  lcd.setCursor(3, 0);
+  lcd.print("TEMPELKAN");
+  lcd.setCursor(2, 1);
+  lcd.print("KARTU  ANDA");
 }
 
 void loop() {
+  lampuON();
+  delay(5000);
+  lampuOFF();
+  delay(5000);
+
   //Cek Kartu
-  if (!rfid.PICC_IsNewCardPresent()) {
+  /*if (!rfid.PICC_IsNewCardPresent()) {
     return;
   }
 
@@ -76,6 +91,13 @@ void loop() {
   
   int index = cariKartu(content);
   if (index >= 0) showCard(index); 
+*/
+}
+void lampuON(){
+  digitalWrite(relayUV,LOW);
+}
+void lampuOFF(){
+  digitalWrite(relayUV,HIGH);
 }
 int cariKartu(String kartu) {
   int result = -1;
